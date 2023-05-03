@@ -1,4 +1,4 @@
-name: wasmtime-fiber-for-wasmedge-release
+name: release-fiber-for-wasmedge
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
