@@ -1,6 +1,6 @@
 [package]
 name = "fiber-for-wasmedge"
-version = "9.0.0"
+version = "0.0.0"
 authors = ["The Wasmtime Project Developers"]
 description = "Wasmtime Fiber for WasmEdge"
 license = "Apache-2.0 WITH LLVM-exception"
