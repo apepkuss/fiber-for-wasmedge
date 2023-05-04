@@ -1,6 +1,6 @@
 [package]
 name = "fiber-for-wasmedge"
-version = "0.0.0"
+version = "8.0.1"
 authors = ["The Wasmtime Project Developers"]
 description = "Wasmtime Fiber for WasmEdge"
 license = "Apache-2.0 WITH LLVM-exception"
@@ -19,10 +19,9 @@ cfg-if = "1.0"
 
 [target.'cfg(unix)'.dependencies]
 rustix = { version = "0.37.13", features = ["mm", "param"] }
-wasmtime-asm-macros = "=0.9.0" # { workspace = true }
+wasmtime-asm-macros = "8.0.1"
 
 [target.'cfg(windows)'.dependencies.windows-sys]
-# workspace = true
 version = "0.48.0"
 features = [
   "Win32_System_Threading",
