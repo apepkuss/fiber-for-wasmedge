@@ -8,7 +8,6 @@ on:
   workflow_dispatch:
     branches:
       - main
-      - publish-test
 
 jobs:
   crate_release:
@@ -25,8 +24,7 @@ jobs:
       - name: Set up build environment
         run: |
           apt update
-          apt install -y software-properties-common libboost-all-dev ninja-build
-          apt install -y llvm-12-dev liblld-12-dev
+          apt install -y software-properties-common libboost-all-dev
 
       - name: Install Rust v1.66
         uses: dtolnay/rust-toolchain@stable
@@ -40,30 +38,12 @@ jobs:
         run: |
           cargo publish --dry-run
 
-    #   - name: Publish
-    #     if: github.ref == 'refs/heads/master'
-    #     env:
-    #       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRIES_FIBER_TOKEN }}
-    #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     shell: bash
-    #     working-directory: crates/
-    #     run: |
-    #         cargo publish -p wasmtime-fiber-for-wasmedge
-
-    #   - name: Build API document
-    #     working-directory: bindings/rust/
-    #     run: |
-    #       export WASMEDGE_DIR="$(pwd)/../../../"
-    #       export WASMEDGE_BUILD_DIR="$(pwd)/../../../build"
-    #       export WASMEDGE_PLUGIN_PATH="$(pwd)/../../../build/plugins/wasmedge_process"
-    #       export LD_LIBRARY_PATH="$(pwd)/../../../build/lib/api"
-    #       cargo doc -p wasmedge-sys --workspace --no-deps --features aot,async,wasi_crypto,wasi_nn,wasmedge_process,ffi --target-dir=./target
-
-    #   - name: Deploy API document
-    #     if: github.ref == 'refs/heads/wasmtime-fiber-for-wasmedge'
-    #     uses: peaceiris/actions-gh-pages@v3
-    #     with:
-    #       github_token: ${{ secrets.GITHUB_TOKEN }}
-    #       publish_branch: gh-pages
-    #       publish_dir: bindings/rust/wasmedge-sys/target/doc
-    #       force_orphan: true
+      # - name: Publish
+      #   if: github.ref == 'refs/heads/main'
+      #   env:
+      #     CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRIES_FIBER_TOKEN }}
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   shell: bash
+      #   working-directory: crates/
+      #   run: |
+      #       cargo publish
