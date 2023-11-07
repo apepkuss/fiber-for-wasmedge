@@ -1,35 +1,30 @@
 [package]
 name = "fiber-for-wasmedge"
-version = "8.0.1"
+version = "14.0.4"
 authors = ["The Wasmtime Project Developers"]
 description = "Wasmtime Fiber for WasmEdge"
 license = "Apache-2.0 WITH LLVM-exception"
 repository = "https://github.com/bytecodealliance/wasmtime"
 edition = "2021"
-rust-version = "1.66.0"
-
-# We link to some native code with symbols that don't change often, so let Cargo
-# know that we can't show up multiple times in a crate graph. If this is an
-# issue in the future we should tweak the build script to set `#define`
-# directives or similar to embed a version number of this crate in symbols.
-links = "wasmtime-fiber-shims"
+# Wasmtime's current policy is that this number can be no larger than the
+# current stable release of Rust minus 2.
+rust-version = "1.71.0"
 
 [dependencies]
 cfg-if = "1.0"
+wasmtime-versioned-export-macros = "=14.0.4"
 
 [target.'cfg(unix)'.dependencies]
-rustix = { version = "0.37.13", features = ["mm", "param"] }
-wasmtime-asm-macros = "8.0.1"
+rustix = { version = "0.38.8", features = ["mm", "param"] }
+wasmtime-asm-macros = "=14.0.4"
 
 [target.'cfg(windows)'.dependencies.windows-sys]
 version = "0.48.0"
-features = [
-  "Win32_System_Threading",
-  "Win32_Foundation",
-]
+features = ["Win32_System_Threading", "Win32_Foundation"]
 
 [build-dependencies]
 cc = "1.0"
+wasmtime-versioned-export-macros = "=14.0.4"
 
 [dev-dependencies]
-backtrace = "0.3.61"
+backtrace = "0.3.68"

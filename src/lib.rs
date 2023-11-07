@@ -1,12 +1,13 @@
-//! This project is derived from [wasmtime-fiber](https://crates.io/crates/wasmtime-fiber). The motivation of creating 
-//! this project is to solve the version conflict issue between `wasmtime-fiber`s used by Wasmtime and WasmEdge, 
-//! respectively. It would be much easier for [runwasi](https://github.com/containerd/runwasi) project to integrate 
+//! This project is derived from [wasmtime-fiber](https://crates.io/crates/wasmtime-fiber). The motivation of creating
+//! this project is to solve the version conflict issue between `wasmtime-fiber`s used by Wasmtime and WasmEdge,
+//! respectively. It would be much easier for [runwasi](https://github.com/containerd/runwasi) project to integrate
 //! these two WebAssembly runtimes.
 
 use std::any::Any;
 use std::cell::Cell;
 use std::io;
 use std::marker::PhantomData;
+use std::ops::Range;
 use std::panic::{self, AssertUnwindSafe};
 
 cfg_if::cfg_if! {
@@ -31,23 +32,34 @@ impl FiberStack {
         Ok(Self(imp::FiberStack::new(size)?))
     }
 
-    /// Creates a new fiber stack with the given pointer to the top of the stack.
+    /// Creates a new fiber stack with the given pointer to the bottom of the
+    /// stack plus the byte length of the stack.
+    ///
+    /// The `bottom` pointer should be addressable for `len` bytes. The page
+    /// beneath `bottom` should be unmapped as a guard page.
     ///
     /// # Safety
     ///
-    /// This is unsafe because there is no validation of the given stack pointer.
+    /// This is unsafe because there is no validation of the given pointer.
     ///
     /// The caller must properly allocate the stack space with a guard page and
     /// make the pages accessible for correct behavior.
-    pub unsafe fn from_top_ptr(top: *mut u8) -> io::Result<Self> {
-        Ok(Self(imp::FiberStack::from_top_ptr(top)?))
+    pub unsafe fn from_raw_parts(bottom: *mut u8, len: usize) -> io::Result<Self> {
+        Ok(Self(imp::FiberStack::from_raw_parts(bottom, len)?))
     }
 
     /// Gets the top of the stack.
     ///
-    /// Returns `None` if the platform does not support getting the top of the stack.
+    /// Returns `None` if the platform does not support getting the top of the
+    /// stack.
     pub fn top(&self) -> Option<*mut u8> {
         self.0.top()
+    }
+
+    /// Returns the range of where this stack resides in memory if the platform
+    /// supports it.
+    pub fn range(&self) -> Option<Range<usize>> {
+        self.0.range()
     }
 }
 
@@ -268,7 +280,7 @@ mod tests {
         let b = SetOnDrop(a.clone());
         let fiber =
             Fiber::<(), (), ()>::new(FiberStack::new(1024 * 1024).unwrap(), move |(), _s| {
-                drop(&b);
+                let _ = &b;
                 panic!();
             })
             .unwrap();
